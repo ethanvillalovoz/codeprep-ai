@@ -1,4 +1,3 @@
-import "react"
 import { useState } from "react"
 
 // MCQChallenge displays a multiple-choice coding challenge card
@@ -27,6 +26,13 @@ export function MCQChallenge({ challenge, showExplanation = false, onCorrect }) 
     // Call onCorrect callback if the correct answer is selected
     if (index === challenge.correct_answer_id && onCorrect) {
       onCorrect()
+    }
+  }
+
+  const handleOptionKeyDown = (event, index) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      handleOptionSelect(index)
     }
   }
 
@@ -59,6 +65,7 @@ export function MCQChallenge({ challenge, showExplanation = false, onCorrect }) 
             className={getOptionClass(index)}
             key={index}
             onClick={() => handleOptionSelect(index)}
+            onKeyDown={(event) => handleOptionKeyDown(event, index)}
             tabIndex={0}
             role="button"
             aria-pressed={selectedOption === index}

@@ -1,76 +1,104 @@
-# 🚦 Usage Guide
+# Usage Guide
 
-This guide will help you set up, configure, and use **PromptedCode** for AI-powered coding interview practice.
+This guide covers local setup, configuration, and common development tasks for CodePrep.AI.
 
----
+## 1. Install Dependencies
 
-## 1. Prerequisites
-
-- Python 3.13+
-- Node.js 18+
-- Conda (recommended)
-- Hugging Face account
-- Clerk account
-- Ngrok (for webhook testing)
-
----
-
-## 2. Installation
-
-### Backend
+Backend:
 
 ```bash
-conda create -n llm-codegen python=3.13
-conda activate llm-codegen
+conda create -n codeprep python=3.13
+conda activate codeprep
 pip install -r backend/requirements.txt
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm install
+```
+
+## 2. Configure Environment Variables
+
+Backend:
+
+```bash
+cp backend/src/.env.example backend/src/.env
+```
+
+Frontend:
+
+```bash
+cp frontend/.env.example frontend/.env
+```
+
+Fill in the Clerk and Hugging Face values before running the app.
+
+## 3. Run Locally
+
+Start the backend:
+
+```bash
 cd backend
 huggingface-cli login
 python server.py
 ```
 
-### Frontend
+Start the frontend:
 
 ```bash
 cd frontend
-npm install
 npm run dev
 ```
 
----
+Visit `http://localhost:5173`.
 
-## 3. Configuration
+## 4. Use the App
 
-- **Backend:** Create a `.env` file with Clerk API keys, JWT secret, Hugging Face token, etc.
-- **Frontend:** Create a `.env` file with your Clerk publishable key.
+1. Sign in with Clerk.
+2. Select a difficulty.
+3. Generate a challenge.
+4. Choose an answer to reveal the explanation.
+5. Visit the history page to review previous challenges.
+6. Watch the daily quota counter reset after 24 hours.
 
----
+## 5. Test Clerk Webhooks Locally
 
-## 4. Using the App
+Use Ngrok only when testing Clerk webhook delivery:
 
-1. **Sign in** with Clerk.
-2. **Generate a challenge:** Select difficulty and click "Generate Challenge".
-3. **Solve the challenge:** Choose an answer and submit.
-4. **View feedback:** See if you were correct and get an explanation.
-5. **Track history:** Review past challenges in the History panel.
-6. **Check quota:** Daily challenge quota resets every 24 hours.
+```bash
+ngrok http 8000
+```
 
----
+Set the Clerk webhook target to:
 
-## 5. Customization
+```text
+https://your-ngrok-domain.ngrok-free.app/webhooks/clerk
+```
 
-- **Change LLM:** Edit `ai_generator.py` to use a different Hugging Face model.
-- **Add features:** Extend React components or FastAPI routes as needed.
+## 6. Development Checks
 
----
+Frontend:
 
-## 6. Troubleshooting
+```bash
+cd frontend
+npm run lint
+npm run build
+```
 
-- **Apple Silicon:** Use MPS device and float16 for PyTorch (see README).
-- **Auth issues:** Double-check Clerk keys and frontend/backend `.env` files.
-- **Model errors:** Ensure Hugging Face login and correct model name.
+Backend:
 
----
+```bash
+cd backend
+pip install -r requirements-ci.txt
+pytest
+```
 
-## 7. More Help
+## 7. Troubleshooting
 
-- See the [FAQ](faq.md) or [open an issue](https://github.com/ethanvillalovoz/llm-coding-challenge-generator/issues).
+- Missing Clerk key: confirm `frontend/.env` has `VITE_CLERK_PUBLISHABLE_KEY`.
+- Auth failures: confirm backend `CLERK_API_KEY`, `JWT_KEY`, and `ALLOWED_ORIGINS`.
+- Model access errors: confirm your Hugging Face account has access to the configured model.
+- Slow first challenge: the backend loads the LLM on the first generation request.
+- Database confusion: delete local `backend/challenges.db` and restart the API to recreate SQLite tables.

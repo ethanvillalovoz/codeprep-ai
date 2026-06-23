@@ -1,6 +1,5 @@
-import "react"
-import { useState, useEffect } from "react"
-import { MCQChallenge } from "../challenge/MCQChallenege.jsx"
+import { useCallback, useEffect, useState } from "react"
+import { MCQChallenge } from "../challenge/MCQChallenge.jsx"
 import { useApi } from "../utils/api.js"
 
 // HistoryPanel displays the user's past coding challenges
@@ -14,30 +13,29 @@ export function HistoryPanel() {
   // Custom API hook for making backend requests
   const { makeRequest } = useApi()
 
-  // Fetch the user's challenge history when the component mounts
-  useEffect(() => {
-    fetchHistory()
-  }, [])
-
   // Fetch the challenge history from the backend
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
       const data = await makeRequest("my-history")
-      console.log(data)
       setHistory(data.challenges)
-    } catch (err) {
+    } catch {
       setError("Failed to load history.")
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [makeRequest])
+
+  // Fetch the user's challenge history when the component mounts
+  useEffect(() => {
+    fetchHistory()
+  }, [fetchHistory])
 
   // Show loading state while fetching history
   if (isLoading) {
     return (
-      <div className="Loading">
+      <div className="loading">
         <p>Loading history...</p>
       </div>
     )

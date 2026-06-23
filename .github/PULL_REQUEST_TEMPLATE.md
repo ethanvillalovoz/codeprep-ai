@@ -17,11 +17,11 @@ Fixes #(issue)
 ## Checklist
 - [ ] My code follows the project style guidelines
 - [ ] I have performed a self-review of my code
-- [ ] I have commented my code, particularly in hard-to-understand areas
 - [ ] I have made corresponding changes to the documentation (if relevant)
 - [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works (if applicable)
-- [ ] New and existing tests pass locally with my changes
+- [ ] I ran `npm run lint` and `npm run build` in `frontend` when frontend code changed
+- [ ] I ran `pytest` in `backend` when backend code changed
+- [ ] I did not commit `.env` files, generated databases, model artifacts, or secrets
 
 ## Additional context
 

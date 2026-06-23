@@ -1,78 +1,58 @@
-# 🏗️ Architecture
+# Architecture
 
-This document provides an overview of the architecture for **PromptedCode**.
-
----
+CodePrep.AI is a full-stack coding interview practice app with a React frontend, FastAPI backend, Clerk authentication, SQLite persistence, and Hugging Face challenge generation.
 
 ## System Overview
 
-PromptedCode is a full-stack web application for AI-powered coding interview prep. It consists of:
-
-- **Frontend:** React SPA (Single Page Application)
-- **Backend:** FastAPI (Python)
-- **AI/ML:** Hugging Face Transformers (Meta-Llama-3-8B-Instruct)
-- **Database:** SQLite (via SQLAlchemy ORM)
-- **Authentication:** Clerk
-
----
-
-## High-Level Diagram
-
 ```mermaid
 graph TD
-    A[User] -->|Browser| B[React Frontend]
-    B -->|REST API| C[FastAPI Backend]
-    C -->|Prompt| D[LLM: Hugging Face]
-    C -->|ORM| E[SQLite DB]
-    B -->|Auth| F[Clerk]
+    User[User] --> Frontend[React + Vite frontend]
+    Frontend --> Clerk[Clerk authentication]
+    Frontend --> API[FastAPI backend]
+    API --> DB[(SQLite database)]
+    API --> LLM[Hugging Face LLM]
+    Clerk --> Webhook[Clerk webhook]
+    Webhook --> API
 ```
 
----
+## Runtime Flow
 
-## Data Flow
-
-1. **User** interacts with the React frontend (e.g., clicks "Generate Challenge").
-2. **Frontend** sends a REST API request to the FastAPI backend.
-3. **Backend** authenticates the user (via Clerk) and processes the request.
-4. **Backend** sends a prompt to the LLM (Hugging Face) to generate a coding challenge.
-5. **LLM** returns a challenge, which the backend stores in the database and returns to the frontend.
-6. **Frontend** displays the challenge and updates the UI.
-
----
+1. The user signs in through Clerk.
+2. The React app requests a Clerk token and calls the FastAPI backend.
+3. The backend verifies the request through Clerk.
+4. The quota service checks whether the user has daily challenge capacity.
+5. The LLM generator creates a multiple-choice challenge for the selected difficulty.
+6. SQLAlchemy stores the generated challenge and updates the user's quota.
+7. The frontend renders the challenge, explanation, and history views.
 
 ## Backend Structure
 
-- `server.py`: FastAPI entrypoint
-- `src/app.py`: FastAPI app instance and routes
-- `src/ai_generator.py`: LLM integration and prompt logic
-- `src/database/`: SQLAlchemy models and DB utilities
-- `src/routes/`: API endpoints (challenge, webhooks)
-- `src/utils.py`: Helper functions
-
----
+- `backend/server.py`: local Uvicorn entrypoint.
+- `backend/src/app.py`: FastAPI app, CORS configuration, health check, and router registration.
+- `backend/src/ai_generator.py`: Hugging Face model loading and challenge generation.
+- `backend/src/database/`: SQLAlchemy models and persistence helpers.
+- `backend/src/routes/challenge.py`: challenge generation, quota, and history endpoints.
+- `backend/src/routes/webhooks.py`: Clerk webhook handler for user provisioning.
+- `backend/src/utils.py`: Clerk authentication helper.
 
 ## Frontend Structure
 
-- `src/`: React source code
-  - `auth/`: Authentication components (Clerk)
-  - `challenge/`: Challenge generator and MCQ UI
-  - `history/`: Challenge history panel
-  - `layout/`: Layout and navigation
-  - `utils/`: API hooks and helpers
+- `frontend/src/auth/`: Clerk provider and auth page.
+- `frontend/src/challenge/`: challenge generation and multiple-choice UI.
+- `frontend/src/history/`: challenge history view.
+- `frontend/src/layout/`: authenticated app shell and navigation.
+- `frontend/src/utils/api.js`: authenticated API client.
 
----
+## Configuration Boundaries
 
-## Deployment
+- `VITE_API_BASE_URL` controls which backend the frontend calls.
+- `ALLOWED_ORIGINS` controls FastAPI CORS origins.
+- `DATABASE_URL` controls the SQLAlchemy database target.
+- `CODEPREP_MODEL_ID` can swap the Hugging Face model without code changes.
 
-- **Backend:** Python 3.13+, Conda, FastAPI, Hugging Face
-- **Frontend:** Node.js 18+, Vite, React
-- **Auth:** Clerk
-- **Dev Tools:** Ngrok for local webhook testing
+## Extension Points
 
----
-
-## Extensibility
-
-- Swap out LLMs by editing `ai_generator.py`
-- Add new endpoints in `src/routes/`
-- Extend UI with new React components
+- Add new challenge formats in `backend/src/ai_generator.py` and `frontend/src/challenge/`.
+- Add practice modes by extending the challenge request schema and prompt.
+- Replace SQLite with Postgres by changing `DATABASE_URL` and running migrations.
+- Add deployment by replacing the intentionally absent placeholder CD flow with a concrete provider-specific workflow.

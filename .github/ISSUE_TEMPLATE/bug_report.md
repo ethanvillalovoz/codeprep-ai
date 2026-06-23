@@ -23,7 +23,9 @@ If applicable, add screenshots to help explain your problem.
 **Environment (please complete the following information):**
 - OS: [e.g. macOS, Windows, Linux]
 - Browser [e.g. Chrome, Safari]
-- Python version [e.g. 3.10]
+- Frontend Node version [e.g. 20]
+- Backend Python version [e.g. 3.13]
+- Auth/model setup affected? [Clerk, Hugging Face, local DB]
 
 **Additional context**
 Add any other context about the problem here.

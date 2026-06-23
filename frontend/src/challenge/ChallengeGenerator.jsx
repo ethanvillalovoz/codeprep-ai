@@ -1,6 +1,5 @@
-import "react"
-import { useState, useEffect } from "react"
-import { MCQChallenge } from "./MCQChallenege.jsx"
+import { useCallback, useEffect, useState } from "react"
+import { MCQChallenge } from "./MCQChallenge.jsx"
 import { useApi } from "../utils/api.js"
 
 // ChallengeGenerator is the main component for generating and displaying coding challenges
@@ -16,20 +15,20 @@ export function ChallengeGenerator() {
   const [difficulty, setDifficulty] = useState("easy")
   const [quota, setQuota] = useState(null)
 
-  // Fetch the user's quota when the component mounts
-  useEffect(() => {
-    fetchQuota()
-  }, [])
-
   // Fetch the current quota from the backend
-  const fetchQuota = async () => {
+  const fetchQuota = useCallback(async () => {
     try {
       const data = await makeRequest("quota")
       setQuota(data)
     } catch (err) {
-      console.log(err)
+      setError(err.message || "Failed to load quota")
     }
-  }
+  }, [makeRequest])
+
+  // Fetch the user's quota when the component mounts
+  useEffect(() => {
+    fetchQuota()
+  }, [fetchQuota])
 
   // Generate a new challenge based on the selected difficulty
   const generateChallenge = async () => {
@@ -42,7 +41,7 @@ export function ChallengeGenerator() {
         body: JSON.stringify({ difficulty }),
       })
       setChallenge(data)
-      fetchQuota() // Refresh quota after generating challenge
+      fetchQuota()
     } catch (err) {
       setError(err.message || "Failed to generate challenge")
     } finally {
@@ -52,8 +51,8 @@ export function ChallengeGenerator() {
 
   // Calculate the next quota reset time (24 hours after last reset)
   const getNextResetTime = () => {
-    if (!quota?.last_reset_data) return null
-    const resetDate = new Date(quota.last_reset_data)
+    if (!quota?.last_reset_date) return null
+    const resetDate = new Date(quota.last_reset_date)
     resetDate.setHours(resetDate.getHours() + 24)
     return resetDate
   }
@@ -69,7 +68,7 @@ export function ChallengeGenerator() {
       <h2 style={{ textAlign: "center", marginBottom: "2rem" }}>AI Interview Practice</h2>
       {/* Quota display and progress bar */}
       <div className="quota-display">
-        <p>Challenge remaining today: {quota?.quota_remaining || 0}</p>
+        <p>Challenges remaining today: {quota?.quota_remaining || 0}</p>
         <div className="quota-progress">
           <div className="quota-progress-bar" style={{ width: `${100 - quotaPercent}%` }}></div>
         </div>

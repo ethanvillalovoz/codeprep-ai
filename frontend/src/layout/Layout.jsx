@@ -1,4 +1,3 @@
-import "react"
 import { SignedOut, UserButton, SignedIn } from "@clerk/clerk-react"
 import { Outlet, Link, Navigate } from "react-router-dom"
 

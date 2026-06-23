@@ -1,20 +1,24 @@
-import "react"
 import { SignIn, SignUp, SignedIn, SignedOut } from "@clerk/clerk-react"
+import { Navigate, useLocation } from "react-router-dom"
 
 // AuthenticationPage handles user sign-in and sign-up using Clerk
 export function AuthenticationPage() {
+  const location = useLocation()
+  const isSignUp = location.pathname.startsWith("/sign-up")
+
   return (
     <div className="auth-container">
       {/* Show sign-in and sign-up forms if the user is signed out */}
       <SignedOut>
-        <SignIn path="/sign-in" routing="path" />
-        <SignUp path="/sign-up" routing="path" />
+        {isSignUp ? (
+          <SignUp path="/sign-up" routing="path" />
+        ) : (
+          <SignIn path="/sign-in" routing="path" />
+        )}
       </SignedOut>
       {/* Show a message if the user is already signed in */}
       <SignedIn>
-        <div className="redirect-message">
-          <p>You are signed in!</p>
-        </div>
+        <Navigate to="/" replace />
       </SignedIn>
     </div>
   )

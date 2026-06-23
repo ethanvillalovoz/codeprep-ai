@@ -1,21 +1,39 @@
 import json
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from typing import Dict, Any
+import os
+from functools import lru_cache
+from typing import Any, Dict, Tuple
 
-# Model ID for the Llama 3 8B Instruct model from Hugging Face
-model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+DEFAULT_MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"
+MODEL_ID = os.getenv("CODEPREP_MODEL_ID", DEFAULT_MODEL_ID)
 
-# Select device: use MPS (Apple Silicon GPU) if available, else CPU
-device = "mps" if torch.backends.mps.is_available() else "cpu"
 
-# Load the tokenizer and model from Hugging Face
-tokenizer = AutoTokenizer.from_pretrained(model_id)
-model = AutoModelForCausalLM.from_pretrained(
-    model_id,
-    torch_dtype=torch.float16,  # Use float16 for MPS, not bfloat16
-)
-model = model.to(device)
+@lru_cache(maxsize=1)
+def load_model() -> Tuple[Any, Any, str]:
+    """
+    Lazily load the tokenizer and model so tests and health checks do not
+    download the LLM before a challenge generation request needs it.
+    """
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    if torch.backends.mps.is_available():
+        device = "mps"
+    elif torch.cuda.is_available():
+        device = "cuda"
+    else:
+        device = "cpu"
+
+    token = os.getenv("HUGGINGFACE_TOKEN") or None
+    torch_dtype = torch.float16 if device in {"mps", "cuda"} else torch.float32
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, token=token)
+    model = AutoModelForCausalLM.from_pretrained(
+        MODEL_ID,
+        token=token,
+        torch_dtype=torch_dtype,
+    )
+    model = model.to(device)
+    return tokenizer, model, device
+
 
 def generate_challenge_with_llm(difficulty: str) -> Dict[str, Any]:
     """
@@ -45,6 +63,8 @@ def generate_challenge_with_llm(difficulty: str) -> Dict[str, Any]:
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": f"Generate a {difficulty} difficulty coding challenge."}
     ]
+
+    tokenizer, model, device = load_model()
 
     # Tokenize the messages using the chat template
     input_ids = tokenizer.apply_chat_template(

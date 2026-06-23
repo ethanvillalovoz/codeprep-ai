@@ -1,29 +1,25 @@
-# ❓ FAQ
+# FAQ
 
-**Q: Why use Llama 3?**  
-A: Llama 3 provides high-quality, diverse coding challenges and is open for research and commercial use.
+## Why use Llama 3?
 
----
+Meta-Llama-3-8B-Instruct is strong enough to generate varied interview-style coding questions while remaining accessible through Hugging Face.
 
-**Q: Can I use my own LLM?**  
-A: Yes! Swap out the model in `ai_generator.py` for your preferred Hugging Face model.
+## Can I use a different model?
 
----
+Yes. Set `CODEPREP_MODEL_ID` in `backend/src/.env` or update the default in `backend/src/ai_generator.py`.
 
-**Q: How do I reset my quota?**  
-A: Quotas reset automatically every 24 hours.
+## Why does the first generated challenge take a while?
 
----
+The model is loaded lazily on the first generation request so the API can start and run tests without downloading the LLM.
 
-**Q: Does this work on Apple Silicon (M1/M2/M3)?**  
-A: Yes! Use the MPS device and float16 dtype for best performance. See the README for details.
+## How does quota work?
 
----
+Each user receives a daily quota. The backend resets quota when at least 24 hours have passed since the user's last reset timestamp.
 
-**Q: How do I report a bug or request a feature?**  
-A: Open an [issue](https://github.com/ethanvillalovoz/llm-coding-challenge-generator/issues) or start a [discussion](https://github.com/ethanvillalovoz/llm-coding-challenge-generator/discussions).
+## Where is data stored?
 
----
+The default local database is SQLite at `backend/challenges.db`. You can point SQLAlchemy to another database with `DATABASE_URL`.
 
-**Q: Where can I find more documentation?**  
-A: See the [wiki](wiki.md), [architecture](architecture.md), and [usage guide](usage-guide.md) in the `docs/` folder.
+## How do I report a bug?
+
+Open an issue at <https://github.com/ethanvillalovoz/codeprep-ai/issues>.

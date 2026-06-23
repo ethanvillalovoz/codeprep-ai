@@ -1,5 +1,8 @@
+from datetime import datetime
+import json
+
 from fastapi import APIRouter, Request, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
 from ..ai_generator import generate_challenge_with_llm
@@ -12,8 +15,6 @@ from ..database.db import (
 )
 from ..utils import authenticate_and_get_user_details
 from ..database.models import get_db
-import json
-from datetime import datetime
 
 router = APIRouter()
 
@@ -23,12 +24,13 @@ class ChallengeRequest(BaseModel):
     """
     difficulty: str
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
-                "difficulty": "easy"
+                "difficulty": "easy",
             }
         }
+    )
 
 @router.post("/generate-challenge")
 async def generate_challenge(
@@ -85,6 +87,8 @@ async def generate_challenge(
             "timestamp": new_challenge.date_created.isoformat()
         }
     
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

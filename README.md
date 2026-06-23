@@ -1,177 +1,129 @@
-# CodePrep.AI: AI Coding Interview Prep
+# CodePrep.AI
 
-[![CI/CD Status](https://img.shields.io/github/actions/workflow/status/ethanvillalovoz/codeprep-ai/ci.yml?branch=main&label=CI%2FCD)](https://github.com/ethanvillalovoz/codeprep-ai/actions)
+[![CI](https://github.com/ethanvillalovoz/codeprep-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/ethanvillalovoz/codeprep-ai/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/release/python-3130/)
-[![React](https://img.shields.io/badge/react-18-blue.svg)](https://react.dev/)
+[![Python](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/)
+[![React](https://img.shields.io/badge/react-19-blue.svg)](https://react.dev/)
 
+CodePrep.AI is a full-stack coding interview practice app that generates multiple-choice coding challenges with a Hugging Face LLM, tracks daily challenge quota, and stores user challenge history behind Clerk authentication.
 
-## 🛡️ CI/CD
+![CodePrep.AI home screen](docs/screenshots/home.png)
 
-This repository features automated **CI/CD** workflows powered by GitHub Actions:
+## Features
 
-- **Continuous Integration (CI):** Automatically installs dependencies and runs build steps for the frontend on every push and pull request to `main`.
-- **Continuous Deployment (CD):** Deploys the application after a successful CI run (customizable in `.github/workflows/cd.yml`).
+- Difficulty-based coding challenge generation with Meta-Llama-3-8B-Instruct
+- Multiple-choice practice flow with instant answer explanations
+- Clerk authentication for protected challenge generation and history views
+- Daily quota tracking with automatic 24-hour resets
+- SQLite persistence through SQLAlchemy
+- React/Vite frontend and FastAPI backend
 
-You can modify the deployment logic in `cd.yml` to fit your hosting provider or infrastructure.
+## Tech Stack
 
-## 🚀 Introduction
+- Frontend: React, Vite, React Router, Clerk
+- Backend: FastAPI, SQLAlchemy, Pydantic, Uvicorn
+- AI/ML: Hugging Face Transformers, PyTorch, Meta-Llama-3-8B-Instruct
+- Database: SQLite by default, configurable through `DATABASE_URL`
+- Tooling: GitHub Actions, ESLint, pytest
 
-**CodePrep.AI** is an AI-powered coding interview prep tool. Instantly generate coding challenges of varying difficulty, practice with real-time feedback, and track your progress—all in one place.
+## Screenshots
 
----
+![Generated challenge](docs/screenshots/challenge.png)
 
-## 📖 Description
+![Challenge history](docs/screenshots/history.png)
 
-CodePrep.AI is a full-stack web application designed to help users prepare for coding interviews. It leverages the latest LLMs (Meta-Llama-3-8B-Instruct) to generate unique, multiple-choice coding challenges based on user-selected difficulty. Users can practice, review their challenge history, and manage their daily quota, all with a modern and intuitive UI.
+## Prerequisites
 
----
+- Python 3.13+
+- Node.js 20+
+- Hugging Face account with access to `meta-llama/Meta-Llama-3-8B-Instruct`
+- Clerk application for authentication
+- Ngrok only if you want to test Clerk webhooks locally
 
-## 🖼️ Visuals
+## Quick Start
 
-> ![CodePrep.AI Home](docs/screenshots/home.png)
-> ![Challenge Example](docs/screenshots/challenge.png)
-> ![History Panel](docs/screenshots/history.png)
-
-> *(Add your own screenshots or GIFs in the `docs/screenshots/` folder!)*
-
----
-
-## 📦 Prerequisites
-
-- **Python 3.13+** (for backend)
-- [**Node.js 18+**](https://nodejs.org/en) (for frontend)
-- [**Conda**](https://www.anaconda.com/download) (recommended for Python env management)
-- [**Hugging Face account**](https://huggingface.co/) (for Llama model access)
-- [**Clerk account**](https://clerk.com/billing?utm_source=rob-shocks&utm_medium=youtube&utm_campaign=billing-demo&dub_id=pzWcSsT9u95viwH6) (for authentication)
-- [**Ngrok**](https://ngrok.com/) (for webhook testing)
-
----
-
-## 🛠️ Technologies Used
-
-- **Frontend:** React, React Router, Clerk, Custom CSS
-- **Backend:** FastAPI, SQLAlchemy, Pydantic
-- **AI/ML:** Hugging Face Transformers, Meta-Llama-3-8B-Instruct
-- **Database:** SQLite
-- **Authentication:** Clerk
-- **Dev Tools:** Ngrok, Conda
-
----
-
-## ⚡ QuickStart Guide
-
-### 1. Clone the repository
+Clone the repository:
 
 ```bash
 git clone https://github.com/ethanvillalovoz/codeprep-ai.git
 cd codeprep-ai
 ```
 
-### 2. Backend Setup
+Set up the backend:
 
 ```bash
 conda create -n codeprep python=3.13
 conda activate codeprep
 pip install -r backend/requirements.txt
+cp backend/src/.env.example backend/src/.env
+```
+
+Fill in `backend/src/.env`, then start the API:
+
+```bash
 cd backend
 huggingface-cli login
 python server.py
 ```
 
-### 3. Frontend Setup
+Set up the frontend in a second terminal:
 
 ```bash
 cd frontend
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-### 4. Clerk & Ngrok
+The frontend runs at `http://localhost:5173` and the API runs at `http://localhost:8000`.
 
-- [Sign up for Clerk](https://clerk.com/) and set up your API keys.
-- [Install Ngrok](https://ngrok.com/) and run:
-  ```bash
-  ngrok http 8000
-  ```
+## Configuration
 
----
+Backend variables live in `backend/src/.env`:
 
-## ⚙️ Configuration
-
-- **Environment Variables:**  
-  You must create `.env` files for both the backend and frontend to securely store your API keys and configuration values.
-
-  - **Backend:**  
-    Create a file named `.env` in the `backend/src` directory with the following variables:
-    ```
-    # .env (backend)
-    CLERK_API_KEY=your_clerk_secret_key
-    JWT_KEY="your_jwt_secret"
-    HUGGINGFACE_TOKEN=your_huggingface_token
-    CLERK_WEBHOOK_SECRET=your_clerk_webhook_secret
-    ```
-    Replace the values with your actual secrets from Clerk and Hugging Face.
-
-  - **Frontend:**  
-    Create a file named `.env` in the `frontend/` directory with the following variable:
-    ```
-    # .env (frontend)
-    VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-    ```
-    Replace `your_clerk_publishable_key` with your Clerk publishable key.
-
-  > **Tip:** Never commit your `.env` files to version control. Use `.env.example` to show required variables.
-
-- **Model Selection:**  
-  - Uses [Meta-Llama-3-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) by default.
-  - To use a different model, update the `model_id` in `backend/src/ai_generator.py`.
-
----
-
-<!-- ## 🧪 Automated Tests
-
-- (Add your test instructions here, e.g. `pytest` for backend, `npm test` for frontend)
-- Example:
-  ```bash
-  cd backend
-  pytest
-
-  cd frontend
-  npm test
-  ```
-
---- -->
-
-## 🗺️ Roadmap
-
-- [x] AI-powered challenge generation
-- [x] User authentication with Clerk
-- [x] Challenge history and quota tracking
-- [ ] Topic/tag-based challenge selection
-- [ ] Timed/practice modes
-- [ ] User feedback and challenge rating
-- [ ] Leaderboard and streaks
-- [ ] Mobile app version
-
----
-
-## 🤝 Contribution
-
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-- Fork the repo and create your branch (`git checkout -b feature/your-feature`)
-- Commit your changes (`git commit -am 'Add new feature'`)
-- Push to the branch (`git push origin feature/your-feature`)
-- Create a new Pull Request
-
----
-
-## 📂 Folder Structure
-
+```bash
+CLERK_API_KEY=your_clerk_secret_key
+JWT_KEY=your_jwt_secret
+CLERK_WEBHOOK_SECRET=your_clerk_webhook_secret
+HUGGINGFACE_TOKEN=your_huggingface_token
+CODEPREP_MODEL_ID=meta-llama/Meta-Llama-3-8B-Instruct
+DATABASE_URL=sqlite:///./challenges.db
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174
 ```
-llm-coding-challenge-generator/
-│
+
+Frontend variables live in `frontend/.env`:
+
+```bash
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+Never commit real `.env` files or generated database files.
+
+## Development
+
+Run frontend checks:
+
+```bash
+cd frontend
+npm run lint
+npm run build
+```
+
+Run backend tests:
+
+```bash
+cd backend
+pip install -r requirements-ci.txt
+pytest
+```
+
+The backend test requirements intentionally avoid installing PyTorch/Transformers so CI can verify API wiring without downloading the LLM.
+
+## Project Structure
+
+```text
+codeprep-ai/
 ├── backend/
 │   ├── src/
 │   │   ├── ai_generator.py
@@ -179,8 +131,9 @@ llm-coding-challenge-generator/
 │   │   ├── database/
 │   │   ├── routes/
 │   │   └── utils.py
-│   └── requirements.txt
-│
+│   ├── tests/
+│   ├── requirements.txt
+│   └── requirements-ci.txt
 ├── frontend/
 │   ├── src/
 │   │   ├── auth/
@@ -188,57 +141,31 @@ llm-coding-challenge-generator/
 │   │   ├── history/
 │   │   ├── layout/
 │   │   └── utils/
-│   ├── public/
-│   ├── App.jsx
-│   └── App.css
-│
+│   └── package.json
 ├── docs/
+│   ├── architecture.md
+│   ├── usage-guide.md
 │   └── screenshots/
-│
-├── .env.example
-├── README.md
-└── LICENSE
+└── .github/
 ```
 
----
+## Documentation
 
-## 📄 License
+- [Architecture](docs/architecture.md)
+- [Usage guide](docs/usage-guide.md)
+- [FAQ](docs/faq.md)
 
-This project is licensed under the MIT License.
+## Roadmap
 
----
+- [x] AI-powered challenge generation
+- [x] Clerk authentication
+- [x] Challenge history
+- [x] Daily quota tracking
+- [ ] Topic/tag-based challenge generation
+- [ ] Timed practice mode
+- [ ] Challenge quality feedback persisted to the backend
+- [ ] Deployment recipe for a production hosting target
 
-## 🙋 FAQ
+## License
 
-**Q: Why use Llama 3?**  
-A: Llama 3 provides high-quality, diverse coding challenges and is open for research and commercial use.
-
-**Q: Can I use my own LLM?**  
-A: Yes! Swap out the model in `ai_generator.py` for your preferred Hugging Face model.
-
-**Q: How do I reset my quota?**  
-A: Quotas reset automatically every 24 hours.
-
----
-
-## 📊 Diagrams
-
-> Example: Sequence diagram for challenge generation
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Frontend
-    participant Backend
-    participant LLM
-    User->>Frontend: Click "Generate Challenge"
-    Frontend->>Backend: POST /api/generate-challenge
-    Backend->>LLM: Generate challenge prompt
-    LLM-->>Backend: Challenge JSON
-    Backend-->>Frontend: Challenge data
-    Frontend-->>User: Display challenge
-```
-
----
-
-*For more details, see the [Documentation](https://github.com/ethanvillalovoz/llm-coding-challenge-generator/docs).*
+This project is released under the [MIT License](LICENSE).

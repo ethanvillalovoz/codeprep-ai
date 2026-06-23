@@ -1,4 +1,7 @@
 import { useAuth } from "@clerk/clerk-react"
+import { useCallback } from "react"
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"
 
 // useApi is a custom hook for making authenticated API requests to the backend
 export const useApi = () => {
@@ -6,21 +9,23 @@ export const useApi = () => {
   const { getToken } = useAuth()
 
   // makeRequest sends a request to the specified API endpoint with authentication
-  const makeRequest = async (endpoint, options = {}) => {
+  const makeRequest = useCallback(async (endpoint, options = {}) => {
     // Retrieve the user's authentication token
     const token = await getToken()
     // Set default headers including the auth token
-    const defaultOptions = {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
+    const headers = {
+      "Content-Type": "application/json",
+      ...options.headers,
+    }
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`
     }
 
     // Send the HTTP request to the backend API
-    const response = await fetch(`http://localhost:8000/api/${endpoint}`, {
-      ...defaultOptions,
+    const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
       ...options,
+      headers,
     })
 
     // Handle non-OK responses and throw errors as needed
@@ -34,7 +39,7 @@ export const useApi = () => {
 
     // Return the parsed JSON response
     return response.json()
-  }
+  }, [getToken])
 
   // Return the makeRequest function for use in components
   return { makeRequest }

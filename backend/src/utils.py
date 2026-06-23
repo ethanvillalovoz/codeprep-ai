@@ -1,13 +1,21 @@
-from fastapi import HTTPException
-from clerk_backend_api import Clerk, AuthenticateRequestOptions
 import os
+from pathlib import Path
+
+from clerk_backend_api import AuthenticateRequestOptions, Clerk
 from dotenv import load_dotenv
+from fastapi import HTTPException
 
-# Load environment variables from .env file
-load_dotenv()
+load_dotenv(Path(__file__).with_name(".env"))
 
-# Initialize Clerk SDK with the API key from environment variables
 clerk_sdk = Clerk(bearer_auth=os.getenv("CLERK_API_KEY"))
+
+
+def get_authorized_parties():
+    raw_parties = os.getenv(
+        "CLERK_AUTHORIZED_PARTIES",
+        "http://localhost:5173,http://localhost:5174",
+    )
+    return [party.strip() for party in raw_parties.split(",") if party.strip()]
 
 def authenticate_and_get_user_details(request):
     """
@@ -19,10 +27,7 @@ def authenticate_and_get_user_details(request):
         request_state = clerk_sdk.authenticate_request(
             request,
             AuthenticateRequestOptions(
-                authorized_parties=[
-                    "http://localhost:5173",
-                    "http://localhost:5174"
-                ],
+                authorized_parties=get_authorized_parties(),
                 jwt_key=os.getenv("JWT_KEY")
             )
         )

@@ -1,10 +1,17 @@
-from sqlalchemy import Column, Integer, String, DateTime, create_engine
-from sqlalchemy.ext.declarative import declarative_base
+import os
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, DateTime, Integer, String, create_engine
+from sqlalchemy.orm import declarative_base
 from datetime import datetime
 
-# Create a SQLite database called 'challenges.db'
-engine = create_engine('sqlite:///challenges.db', echo=True)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./challenges.db")
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args=connect_args,
+    echo=os.getenv("SQLALCHEMY_ECHO") == "1",
+)
 Base = declarative_base()
 
 class Challenge(Base):
@@ -31,7 +38,7 @@ class ChallengeQuota(Base):
     __tablename__ = 'challenge_quotas'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, nullable=False, unique=True)
+    user_id = Column(String, nullable=False, unique=True)
     quota_remaining = Column(Integer, nullable=False, default=50)
     last_reset_date = Column(DateTime, default=datetime.now)
 

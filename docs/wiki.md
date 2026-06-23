@@ -1,37 +1,20 @@
-# 📚 Project Wiki
+# Project Wiki
 
-Welcome to the **PromptedCode** project wiki! Here you'll find detailed documentation, guides, and resources to help you understand, use, and contribute to the project.
+Welcome to the CodePrep.AI documentation hub.
 
----
+## Contents
 
-## 📖 Table of Contents
-
-- [Project Overview](#project-overview)
 - [Architecture](architecture.md)
 - [Usage Guide](usage-guide.md)
 - [FAQ](faq.md)
 - [Contributing](../CONTRIBUTING.md)
-- [Screenshots](screenshots/)
-
----
 
 ## Project Overview
 
-**PromptedCode** is an AI-powered coding interview prep tool. Instantly generate coding challenges, practice with real-time feedback, and track your progress—all in one place. Built with FastAPI, React, and Hugging Face LLMs.
+CodePrep.AI helps users practice coding interview concepts by generating multiple-choice challenges, checking answers, explaining solutions, tracking daily quota, and storing challenge history.
 
----
+## Need Help?
 
-## Documentation
-
-- **[Architecture](architecture.md):** Learn about the system design, backend/frontend structure, and data flow.
-- **[Usage Guide](usage-guide.md):** Step-by-step instructions for setup, configuration, and daily use.
-- **[FAQ](faq.md):** Answers to common questions about models, quotas, and customization.
-- **[CONTRIBUTING](../CONTRIBUTING.md):** How to contribute, report issues, and submit PRs.
-
----
-
-## Need More Help?
-
-- Open an [issue](https://github.com/ethanvillalovoz/llm-coding-challenge-generator/issues)
-- Start a [discussion](https://github.com/ethanvillalovoz/llm-coding-challenge-generator/discussions)
-- Contact the maintainer via GitHub
+- Open an issue: <https://github.com/ethanvillalovoz/codeprep-ai/issues>
+- Review setup instructions in the [usage guide](usage-guide.md)
+- Read the system design in [architecture](architecture.md)

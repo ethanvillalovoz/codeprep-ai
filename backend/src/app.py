@@ -1,21 +1,33 @@
-from fastapi import FastAPI, Request, Response
+import os
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routes import challenge, webhooks
 
-# Create the FastAPI application instance
-app = FastAPI()
 
-# Add CORS middleware to allow cross-origin requests from any origin
+def get_allowed_origins():
+    raw_origins = os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:5173,http://localhost:5174",
+    )
+    return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+
+
+app = FastAPI(title="CodePrep.AI API")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],        # Allow all origins (for development; restrict in production)
-    allow_credentials=True,     # Allow cookies and authentication headers
-    allow_methods=["*"],        # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],        # Allow all headers
+    allow_origins=get_allowed_origins(),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Include the challenge-related API routes under the /api prefix
-app.include_router(challenge.router, prefix="/api")
 
-# Include the webhook-related API routes under the /webhooks prefix
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+
+app.include_router(challenge.router, prefix="/api")
 app.include_router(webhooks.router, prefix="/webhooks")

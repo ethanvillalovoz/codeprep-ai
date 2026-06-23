@@ -1,0 +1,7 @@
+fastapi
+httpx
+pytest
+sqlalchemy
+python-dotenv
+clerk_backend_api
+svix
