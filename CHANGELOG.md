@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [1.0.0] - 2026-06-23
 
 - Polished public documentation and setup instructions.
 - Removed generated SQLite user data from version control.
