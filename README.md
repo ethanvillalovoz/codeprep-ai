@@ -32,6 +32,12 @@ CodePrep.AI is a full-stack coding interview practice app that generates multipl
 
 ![Challenge history](docs/screenshots/history.png)
 
+## Demo Availability
+
+CodePrep.AI is not currently published as a public live app because the product depends on a running FastAPI backend, Clerk authentication, Hugging Face model access, and local or hosted persistence. The README screenshots are the public demo surface for now.
+
+See [Demo strategy](docs/demo-strategy.md) for the recommended walkthrough format and the requirements for adding a maintained hosted demo later.
+
 ## Prerequisites
 
 - Python 3.13+
@@ -153,6 +159,7 @@ codeprep-ai/
 
 - [Architecture](docs/architecture.md)
 - [Usage guide](docs/usage-guide.md)
+- [Demo strategy](docs/demo-strategy.md)
 - [FAQ](docs/faq.md)
 
 ## Roadmap
